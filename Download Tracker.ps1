@@ -4,9 +4,7 @@
 #
 $Script:AdaptableTmpVer = "202101281025"
 #
-#Requires -Module VenafiTppPs
-#
-$Script:AdaptableAppVer = "202111121648"
+$Script:AdaptableAppVer = "202211171625"
 $Script:AdaptableAppDrv = "Download Tracker"
 
 <#
