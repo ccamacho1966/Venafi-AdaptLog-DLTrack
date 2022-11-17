@@ -52,7 +52,7 @@ These fields can be viewed in the 'Renewal Details', but I find it more useful t
 
 ## Important Note
 
-This is a **forward-looking** enhancement! This doesn't scour your Venafi logs and load historical data. This only tracks downloads from the point you installed the log driver. In practical terms, this means you will need to have created/renewed a certificate one time while this driver is installed and then be coming back to the certificate for a new renewal request decision - i.e. it will probably be a year after you first install this driver that you begin to get value from the data is preserves.
+This is a **forward-looking** enhancement! This doesn't scour your Venafi logs and load historical data. This only tracks downloads from the point you installed the log driver. In practical terms, this means you will need to have created/renewed a certificate one time while this driver is installed and then be coming back to the certificate for a new renewal request decision - i.e. it will probably be a year after you first install this driver that you begin to get value from the data it preserves.
 
 ## Support
 This is the very definition of a minimalistic driver. It requires no additional connectivity or API access. It would be pretty hard to break this, but log an issue and I'll have a look.
