@@ -2,10 +2,8 @@
 # Download Tracker - Update Custom Fields with username/datetime of last download
 # to make it easier to track dead certificates people are blindly renewing...
 #
-$Script:AdaptableTmpVer = "202101281025"
-#
-$Script:AdaptableAppVer = "202211171625"
-$Script:AdaptableAppDrv = "Download Tracker"
+$Script:AdaptableAppVer = '202206011803'
+$Script:AdaptableAppDrv = 'Download Tracker'
 
 <#
 
@@ -81,21 +79,12 @@ function Perform-Action
         [System.Collections.Hashtable]$Fields
     )
 
-    Initialize-VenDebugLog -General $General -LogClass LogMsg
-
-    Write-VenDebugLog "Last Downloaded On GUID: $($Fields.Text2)"
-    Write-VenDebugLog "Last Downloaded By GUID: $($Fields.Text1)"
-    Write-VenDebugLog "Downloaded On: $($Event.ServerDate)"
-    Write-VenDebugLog "Downloaded By: $($Event.Text1)"
+    Write-VenDebugLog "Certificate: $($Event.Component)"
+    Write-VenDebugLog "Last DL On GUID '$($Fields.Text2)', Last DL By GUID '$($Fields.Text1)'"
+    Write-VenDebugLog "Downloaded On: $($Event.ServerDate) by $($Event.Text1)"
 
     return @{ Result="Success"; Updates=@{"$($Fields.Text1)"="$($Event.Text1)"; "$($Fields.Text2)"="$($Event.ServerDate)"} }
 }
-
-#
-# Code below this marker is not called directly by Venafi
-# Place your internal support calls below this marker
-#
-
 
 
 #
@@ -111,14 +100,10 @@ function Write-VenDebugLog
     filter Add-TS {"$(Get-Date -Format o): $_"}
 
     # do nothing and return immediately if debug isn't on
-    if ($DEBUG_FILE -eq $null) {
-        return
-    }
+    if ($null -eq $DEBUG_FILE) { return }
     
-    # if the logfile isn't initialized then just crash now
-    if ($Script:venDebugFile -eq $null) {
-        throw("Call to Write-VenDebugLog() but logfile has not been initialized...")
-    }
+    # initialize logfile variable, if necessary
+    if ($null -eq $Script:venDebugFile) { Initialize-VenDebugLog }
 
     # write the message to the debug file
     Write-Output "$($LogMessage)" | Add-TS | Add-Content -Path $Script:venDebugFile
@@ -126,32 +111,20 @@ function Write-VenDebugLog
 
 function Initialize-VenDebugLog
 {
-    Param(
-        [Parameter(Position=0, Mandatory)][System.Collections.Hashtable]$General,
-        [String]$LogClass=$null
-    )
+    Param( )
 
     # do nothing and return immediately if debug isn't on
-    if ($DEBUG_FILE -eq $null) {
-        return
-    }
+    if ($null -eq $DEBUG_FILE) { return }
 
-    if ($Script:venDebugFile -ne $null) {
+    if ($null -ne $Script:venDebugFile) {
         Write-VenDebugLog "WARNING: Initialize-VenDebugLog() called more than once!"
         return
     }
 
-    $Script:venDebugFile = "$(Split-Path -Path $DEBUG_FILE)\$($Script:AdaptableAppDrv)"
-    if (($General.HostAddress -ne '') -and ($General.HostAddress -ne $null)) {
-        $Script:venDebugFile += "-$($General.HostAddress)"
-    }
-    if ($LogClass -ne '') {
-        $Script:venDebugFile += "-$($LogClass)"
-    }
-    $Script:venDebugFile += ".log"
+    $Script:venDebugFile = "$(Split-Path -Path $DEBUG_FILE)\$($Script:AdaptableAppDrv).log"
     
-    Write-Output "" | Add-Content -Path $Script:venDebugFile
-    Write-VenDebugLog "$($Script:AdaptableAppDrv) v$($Script:AdaptableAppVer): Venafi called $((Get-PSCallStack)[1].Command)"
+    Write-Output '' | Add-Content -Path $Script:venDebugFile
+    Write-VenDebugLog "$($Script:AdaptableAppDrv) v$($Script:AdaptableAppVer): Venafi called $((Get-PSCallStack)[2].Command)"
     Write-VenDebugLog "PowerShell Environment: $($PSVersionTable.PSEdition) Edition, Version $($PSVersionTable.PSVersion.Major)"
 }
 
